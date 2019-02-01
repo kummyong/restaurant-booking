@@ -48,7 +48,7 @@ public class BookingScheduler {
 		
 		schedules.add(schedule);
 		
-		// send SMS to customer
+		// send SMS to customer  
 		smsSender.send(schedule);
 		// send E-mail to customer when e-mail is valid
 		if(schedule.getCustomer().getEmail() != null){
