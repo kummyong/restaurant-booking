@@ -14,7 +14,12 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BookingSchedulerTest {
 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("YYYY/MM/dd HH:mm");
@@ -24,17 +29,20 @@ public class BookingSchedulerTest {
 	private static final Customer CUSTOMER_WITH_EMAIL= mock(Customer.class, RETURNS_MOCKS);
 	private static final int MAX_CAPACITY = 3;
 	private static final int UNDER_CAPACITY = 1;
-	private BookingScheduler bookingScheduler = new BookingScheduler(MAX_CAPACITY);
-	private List<Schedule> schedules = new ArrayList<Schedule>();
 	private TestableMailSender testableMailSender= new TestableMailSender();
 	private TestableSmsSender testableSmsSender= new TestableSmsSender(); 
 
+	@InjectMocks
+	@Spy
+	private BookingScheduler bookingScheduler= new BookingScheduler(MAX_CAPACITY);
+	
+	@Spy
+	private List<Schedule> schedules= new ArrayList<Schedule>();
+	
 	@Before
 	public void setUp() {
-		bookingScheduler.setSchedules(schedules);
 		bookingScheduler.setSmsSender(testableSmsSender);
 		bookingScheduler.setMailSender(testableMailSender);
-
 	}
 	
 	@Test(expected = RuntimeException.class)
@@ -122,6 +130,7 @@ public class BookingSchedulerTest {
 		// arrange
 		Schedule schedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITHOUT_EMAIL);
 		
+		
 		// act
 		bookingScheduler.addSchedule(schedule);
 		
@@ -181,4 +190,6 @@ public class BookingSchedulerTest {
 	
 	// Step13. 테스트 코드 리팩토링. TestableBookingScheduler 클래스로 일반화. SundayBookingScheduler, MondayBookingScheduler 삭제
 	
+	// Step14. Mockito mock 라이브러리를 활용하여 Customer dummy 객체 생성
+
 }
