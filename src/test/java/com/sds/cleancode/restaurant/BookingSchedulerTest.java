@@ -2,6 +2,7 @@ package com.sds.cleancode.restaurant;
 
 import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_MOCKS;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.core.IsNull;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -205,4 +207,17 @@ public class BookingSchedulerTest {
 	// Step17. Mockito @Spy를 활용하여 setter 대신 @Spy 어노테이션을 활용한 Injection 확인(setMailSender) 및 Mockito verify 라이브러리를 활용한 메서드 호출여부 테스트
 	
 	// Step18. Mockito when, thenReturn 라이브러를 활용하여 stubbing 및 불필요 하게된 TestableBookingSchedule 클래스 삭제
+	
+	@Test
+	public void 이메일이_없는_Customer_테스트() {
+		
+		// arrange
+		Customer customer= new Customer("Ross", "010-1234-5678");
+		
+		// act
+		String email= customer.getEmail();
+		
+		// assert
+		assertNull(email);
+	}
 }
