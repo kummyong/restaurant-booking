@@ -1,10 +1,13 @@
 package com.sds.cleancode.restaurant;
 
+import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_MOCKS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +33,6 @@ public class BookingSchedulerTest {
 	private static final int MAX_CAPACITY = 3;
 	private static final int UNDER_CAPACITY = 1;
 	private TestableMailSender testableMailSender= new TestableMailSender();
-	private TestableSmsSender testableSmsSender= new TestableSmsSender(); 
 
 	@InjectMocks
 	@Spy
@@ -39,9 +41,11 @@ public class BookingSchedulerTest {
 	@Spy
 	private List<Schedule> schedules= new ArrayList<Schedule>();
 	
+	@Spy
+	private SmsSender smsSender= new SmsSender();
+	
 	@Before
 	public void setUp() {
-		bookingScheduler.setSmsSender(testableSmsSender);
 		bookingScheduler.setMailSender(testableMailSender);
 	}
 	
@@ -121,7 +125,7 @@ public class BookingSchedulerTest {
 		bookingScheduler.addSchedule(schedule);
 		
 		// assert
-		assertThat(testableSmsSender.isSendMethodCalled(), is(true));
+		verify(smsSender, times(1)).send(schedule);
 	}
 	
 	@Test
@@ -192,4 +196,7 @@ public class BookingSchedulerTest {
 	
 	// Step14. Mockito mock 라이브러리를 활용하여 Customer dummy 객체 생성
 
+	// Step15. Mockito @Spy를 활용하여 setter 대신 @Spy 어노테이션을 활용한 Injection 확인
+	
+	// Step16. Mockito @Spy를 활용하여 setter 대신 @Spy 어노테이션을 활용한 Injection 확인 및 Mockito verify 라이브러리를 활용한 메서드 호출여부 테스트 
 }
