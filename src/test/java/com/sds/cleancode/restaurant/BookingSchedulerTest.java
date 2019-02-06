@@ -220,4 +220,17 @@ public class BookingSchedulerTest {
 		// assert
 		assertNull(email);
 	}
+	
+	@Test
+	public void 이메일이_있는_Customer_테스트() {
+		
+		// arrange
+		Customer customer= new Customer("Ross", "010-1234-5678", "abc@test.com");
+		
+		// act
+		String email= customer.getEmail();
+		
+		// assert
+		assertThat(email, is("abc@test.com"));
+	}
 }
