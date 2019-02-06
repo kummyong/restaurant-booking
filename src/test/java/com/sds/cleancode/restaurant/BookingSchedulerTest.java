@@ -18,23 +18,28 @@ public class BookingSchedulerTest {
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("YYYY/MM/dd HH:mm");
 	private static final DateTime ON_THE_HOUR = DATE_TIME_FORMATTER.parseDateTime("2017/06/19 17:00");
 	private static final DateTime NOT_ONT_THE_HOUR = new DateTime(2017, 2, 6, 17, 5);
-	private static final Customer CUSTOMER = new Customer("Fake name", "010-1234-4727");
+	private static final Customer CUSTOMER_WITHOUT_EMAIL = new Customer("Fake name", "010-1234-4727");
+	private static final Customer CUSTOMER_WITH_EMAIL= new Customer("Ross", "010-1234-4727", "abc@test.com");
 	private static final int MAX_CAPACITY = 3;
 	private static final int UNDER_CAPACITY = 1;
 	private BookingScheduler bookingScheduler = new BookingScheduler(MAX_CAPACITY);
 	private List<Schedule> schedules = new ArrayList<Schedule>();
+	private TestableMailSender testableMailSender= new TestableMailSender();
+	private TestableSmsSender testableSmsSender= new TestableSmsSender(); 
 
-	
 	@Before
 	public void setUp() {
 		bookingScheduler.setSchedules(schedules);
+		bookingScheduler.setSmsSender(testableSmsSender);
+		bookingScheduler.setMailSender(testableMailSender);
+
 	}
 	
 	@Test(expected = RuntimeException.class)
 	public void Step1_예약은_정시에만_가능하다_정시가_아닌경우_예외발생() {
 
 		// arrange
-		Schedule schedule = new Schedule(NOT_ONT_THE_HOUR, UNDER_CAPACITY, CUSTOMER);
+		Schedule schedule = new Schedule(NOT_ONT_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITHOUT_EMAIL);
 
 		// act
 		bookingScheduler.addSchedule(schedule);
@@ -47,7 +52,7 @@ public class BookingSchedulerTest {
 	public void Step2_예약은_정시에만_가능하다_정시인_경우_스케줄_추가_성공() {
 
 		// arrange
-		Schedule schedule = new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER);
+		Schedule schedule = new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITHOUT_EMAIL);
 
 		// act
 		bookingScheduler.addSchedule(schedule);
@@ -62,13 +67,13 @@ public class BookingSchedulerTest {
 	public void Step4_시간대별_인원제한이_있다_같은_시간대에_Capacity_초과할_경우_예외발생() {
 
 		// arrange
-		Schedule fullSchedule = new Schedule(ON_THE_HOUR, MAX_CAPACITY, CUSTOMER);
+		Schedule fullSchedule = new Schedule(ON_THE_HOUR, MAX_CAPACITY, CUSTOMER_WITHOUT_EMAIL);
 		schedules.add(fullSchedule);
 		bookingScheduler.setSchedules(schedules);
 
 		try {
 			// act
-			Schedule newSchedule = new Schedule(ON_THE_HOUR, MAX_CAPACITY, CUSTOMER);
+			Schedule newSchedule = new Schedule(ON_THE_HOUR, MAX_CAPACITY, CUSTOMER_WITHOUT_EMAIL);
 			bookingScheduler.addSchedule(newSchedule);
 			fail();
 		} catch (RuntimeException e) {
@@ -81,13 +86,13 @@ public class BookingSchedulerTest {
 	public void Step5_시간대별_인원제한이_있다_시간대가_다르면_Capacity_차있어도_스케줄_추가_성공() {
 
 		// arrange
-		Schedule fullSchedule = new Schedule(ON_THE_HOUR, MAX_CAPACITY, CUSTOMER);
+		Schedule fullSchedule = new Schedule(ON_THE_HOUR, MAX_CAPACITY, CUSTOMER_WITHOUT_EMAIL);
 		schedules.add(fullSchedule);
 		bookingScheduler.setSchedules(schedules);
 
 		// act
 		DateTime anotherHour= ON_THE_HOUR.plus(1);
-		Schedule newSchedule = new Schedule(anotherHour, MAX_CAPACITY, CUSTOMER);
+		Schedule newSchedule = new Schedule(anotherHour, MAX_CAPACITY, CUSTOMER_WITHOUT_EMAIL);
 		bookingScheduler.addSchedule(newSchedule);
 
 		// assert
@@ -100,11 +105,7 @@ public class BookingSchedulerTest {
 	public void Step7_예약완료시_SMS는_무조건_발송() {
 		
 		// arrange
-		TestableSmsSender testableSmsSender= new TestableSmsSender(); 
-		
-		Schedule schedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER);
-		BookingScheduler bookingScheduler= new BookingScheduler(MAX_CAPACITY); 
-		bookingScheduler.setSmsSender(testableSmsSender);
+		Schedule schedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITHOUT_EMAIL);
 		
 		// act
 		bookingScheduler.addSchedule(schedule);
@@ -117,10 +118,7 @@ public class BookingSchedulerTest {
 	public void Step8_이메일이_없는_경우에는_이메일_미발송() {
 		
 		// arrange
-		TestableMailSender testableMailSender= new TestableMailSender(); 
-		
-		Schedule schedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER);
-		bookingScheduler.setMailSender(testableMailSender);
+		Schedule schedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITHOUT_EMAIL);
 		
 		// act
 		bookingScheduler.addSchedule(schedule);
@@ -133,11 +131,7 @@ public class BookingSchedulerTest {
 	public void Step9_이메일이_있는_경우에만_이메일_발송() {
 		
 		// arrange
-		Customer customerWithEmail= new Customer("Ross", "010-1234-4727", "abc@test.com");
-		TestableMailSender testableMailSender= new TestableMailSender();
-		
-		Schedule schedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, customerWithEmail);
-		bookingScheduler.setMailSender(testableMailSender);
+		Schedule schedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITH_EMAIL);
 		
 		// act
 		bookingScheduler.addSchedule(schedule);
@@ -145,4 +139,6 @@ public class BookingSchedulerTest {
 		// assert
 		assertThat(testableMailSender.getCountSendMailMethodIsCalled(), is(1));
 	}
+	
+	// Step10. 테스트 코드 리팩토링  
 }
