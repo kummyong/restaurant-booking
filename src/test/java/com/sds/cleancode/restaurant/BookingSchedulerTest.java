@@ -50,6 +50,7 @@ public class BookingSchedulerTest {
 	
 	@Before
 	public void setUp() {
+		bookingScheduler.addObserver(smsSender);
 	}
 	
 	@Test(expected = RuntimeException.class)

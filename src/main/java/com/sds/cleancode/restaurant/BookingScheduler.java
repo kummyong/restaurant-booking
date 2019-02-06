@@ -46,8 +46,9 @@ public class BookingScheduler extends Observable {
 		
 		schedules.add(schedule);
 		
-		// send SMS to customer  
-		smsSender.send(schedule);
+		// send SMS to customer using Observer Pattern  
+		setChanged();
+		notifyObservers(schedule);
 		
 		// send E-mail to customer when e-mail is valid
 		if(schedule.getCustomer().getEmail() != null){
