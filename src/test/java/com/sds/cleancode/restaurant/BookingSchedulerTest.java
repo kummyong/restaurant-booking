@@ -10,6 +10,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.junit.Before;
 import org.junit.Test;
 
 public class BookingSchedulerTest {
@@ -21,7 +22,14 @@ public class BookingSchedulerTest {
 	private static final int MAX_CAPACITY = 3;
 	private static final int UNDER_CAPACITY = 1;
 	private BookingScheduler bookingScheduler = new BookingScheduler(MAX_CAPACITY);
+	private List<Schedule> schedules = new ArrayList<Schedule>();
 
+	
+	@Before
+	public void setUp() {
+		bookingScheduler.setSchedules(schedules);
+	}
+	
 	@Test(expected = RuntimeException.class)
 	public void Step1_예약은_정시에만_가능하다_정시가_아닌경우_예외발생() {
 
@@ -54,7 +62,6 @@ public class BookingSchedulerTest {
 	public void Step4_시간대별_인원제한이_있다_같은_시간대에_Capacity_초과할_경우_예외발생() {
 
 		// arrange
-		List<Schedule> schedules = new ArrayList<Schedule>();
 		Schedule fullSchedule = new Schedule(ON_THE_HOUR, MAX_CAPACITY, CUSTOMER);
 		schedules.add(fullSchedule);
 		bookingScheduler.setSchedules(schedules);
@@ -74,7 +81,6 @@ public class BookingSchedulerTest {
 	public void Step5_시간대별_인원제한이_있다_시간대가_다르면_Capacity_차있어도_스케줄_추가_성공() {
 
 		// arrange
-		List<Schedule> schedules = new ArrayList<Schedule>();
 		Schedule fullSchedule = new Schedule(ON_THE_HOUR, MAX_CAPACITY, CUSTOMER);
 		schedules.add(fullSchedule);
 		bookingScheduler.setSchedules(schedules);
@@ -87,4 +93,6 @@ public class BookingSchedulerTest {
 		// assert
 		assertThat(bookingScheduler.hasSchedule(newSchedule), is(true));
 	}
+	
+	// Step6. 테스트 코드 리팩토링
 }
