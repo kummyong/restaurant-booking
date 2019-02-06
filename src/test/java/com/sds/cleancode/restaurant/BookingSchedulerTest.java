@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -162,8 +163,8 @@ public class BookingSchedulerTest {
 	public void Step11_현재날짜가_일요일인_경우_예약불가_예외처리() {
 		
 		// arrange
-		String sunday= "2019/02/03 17:00";
-		BookingScheduler bookingScheduler= new TestableBookingScheduler(MAX_CAPACITY, sunday); 
+		DateTime sunday= DATE_TIME_FORMATTER.parseDateTime("2019/02/03 17:00");
+		when(bookingScheduler.getNow()).thenReturn(sunday);
 		
 		try {
 			// act
@@ -181,8 +182,8 @@ public class BookingSchedulerTest {
 	public void Step12_현재날짜가_월요일인_경우_예약가능() {
 		
 		// arrange
-		String monday= "2019/02/04 17:00";
-		BookingScheduler bookingScheduler= new TestableBookingScheduler(MAX_CAPACITY, monday);
+		DateTime monday= DATE_TIME_FORMATTER.parseDateTime("2019/02/04 17:00");
+		when(bookingScheduler.getNow()).thenReturn(monday);
 		
 		// act
 		Schedule newSchedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITH_EMAIL);
@@ -202,4 +203,6 @@ public class BookingSchedulerTest {
 	// Step16. Mockito @Spy를 활용하여 setter 대신 @Spy 어노테이션을 활용한 Injection 확인(setSmsSender) 및 Mockito verify 라이브러리를 활용한 메서드 호출여부 테스트
 	
 	// Step17. Mockito @Spy를 활용하여 setter 대신 @Spy 어노테이션을 활용한 Injection 확인(setMailSender) 및 Mockito verify 라이브러리를 활용한 메서드 호출여부 테스트
+	
+	// Step18. Mockito when, thenReturn 라이브러를 활용하여 stubbing 및 불필요 하게된 TestableBookingSchedule 클래스 삭제
 }
