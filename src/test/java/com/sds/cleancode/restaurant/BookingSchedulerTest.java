@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_MOCKS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -32,7 +33,6 @@ public class BookingSchedulerTest {
 	private static final Customer CUSTOMER_WITH_EMAIL= mock(Customer.class, RETURNS_MOCKS);
 	private static final int MAX_CAPACITY = 3;
 	private static final int UNDER_CAPACITY = 1;
-	private TestableMailSender testableMailSender= new TestableMailSender();
 
 	@InjectMocks
 	@Spy
@@ -44,9 +44,11 @@ public class BookingSchedulerTest {
 	@Spy
 	private SmsSender smsSender= new SmsSender();
 	
+	@Spy
+	private MailSender mailSender= new MailSender();
+	
 	@Before
 	public void setUp() {
-		bookingScheduler.setMailSender(testableMailSender);
 	}
 	
 	@Test(expected = RuntimeException.class)
@@ -134,12 +136,11 @@ public class BookingSchedulerTest {
 		// arrange
 		Schedule schedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITHOUT_EMAIL);
 		
-		
 		// act
 		bookingScheduler.addSchedule(schedule);
 		
 		// assert
-		assertThat(testableMailSender.getCountSendMailMethodIsCalled(), is(0));
+		verify(mailSender, never()).sendMail(schedule);
 	}
 	
 	@Test
@@ -152,7 +153,7 @@ public class BookingSchedulerTest {
 		bookingScheduler.addSchedule(schedule);
 		
 		// assert
-		assertThat(testableMailSender.getCountSendMailMethodIsCalled(), is(1));
+		verify(mailSender, times(1)).sendMail(schedule);
 	}
 	
 	// Step10. 테스트 코드 리팩토링 
@@ -198,5 +199,7 @@ public class BookingSchedulerTest {
 
 	// Step15. Mockito @Spy를 활용하여 setter 대신 @Spy 어노테이션을 활용한 Injection 확인
 	
-	// Step16. Mockito @Spy를 활용하여 setter 대신 @Spy 어노테이션을 활용한 Injection 확인 및 Mockito verify 라이브러리를 활용한 메서드 호출여부 테스트 
+	// Step16. Mockito @Spy를 활용하여 setter 대신 @Spy 어노테이션을 활용한 Injection 확인(setSmsSender) 및 Mockito verify 라이브러리를 활용한 메서드 호출여부 테스트
+	
+	// Step17. Mockito @Spy를 활용하여 setter 대신 @Spy 어노테이션을 활용한 Injection 확인(setMailSender) 및 Mockito verify 라이브러리를 활용한 메서드 호출여부 테스트
 }
