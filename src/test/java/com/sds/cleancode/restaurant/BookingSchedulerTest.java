@@ -95,4 +95,21 @@ public class BookingSchedulerTest {
 	}
 	
 	// Step6. 테스트 코드 리팩토링
+	
+	@Test
+	public void Step7_예약완료시_SMS는_무조건_발송() {
+		
+		// arrange
+		TestableSmsSender testableSmsSender= new TestableSmsSender(); 
+		
+		Schedule schedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER);
+		BookingScheduler bookingScheduler= new BookingScheduler(MAX_CAPACITY); 
+		bookingScheduler.setSmsSender(testableSmsSender);
+		
+		// act
+		bookingScheduler.addSchedule(schedule);
+		
+		// assert
+		assertThat(testableSmsSender.isSendMethodCalled(), is(true));
+	}
 }
