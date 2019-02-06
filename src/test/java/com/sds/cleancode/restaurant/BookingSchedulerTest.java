@@ -1,8 +1,11 @@
 package com.sds.cleancode.restaurant;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -46,4 +49,24 @@ public class BookingSchedulerTest {
 	}
 	
 	// Step3. 테스트 코드 리팩토링
+	
+	@Test
+	public void Step4_시간대별_인원제한이_있다_같은_시간대에_Capacity_초과할_경우_예외발생() {
+		
+		// arrange
+		List<Schedule> schedules= new ArrayList<Schedule>();
+		Schedule fullSchedule= new Schedule(ON_THE_HOUR, MAX_CAPACITY, CUSTOMER);
+		schedules.add(fullSchedule);
+		bookingScheduler.setSchedules(schedules);
+		
+		try {
+			// act
+			Schedule newSchedule= new Schedule(ON_THE_HOUR, MAX_CAPACITY, CUSTOMER);
+			bookingScheduler.addSchedule(newSchedule);
+			fail();
+		} catch(RuntimeException e) {
+			// assert
+			assertThat(e.getMessage(), is("Number of people is over restaurant capacity per hour"));
+		}
+	}
 }
