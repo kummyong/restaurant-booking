@@ -128,4 +128,21 @@ public class BookingSchedulerTest {
 		// assert
 		assertThat(testableMailSender.getCountSendMailMethodIsCalled(), is(0));
 	}
+	
+	@Test
+	public void Step9_이메일이_있는_경우에만_이메일_발송() {
+		
+		// arrange
+		Customer customerWithEmail= new Customer("Ross", "010-1234-4727", "abc@test.com");
+		TestableMailSender testableMailSender= new TestableMailSender();
+		
+		Schedule schedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, customerWithEmail);
+		bookingScheduler.setMailSender(testableMailSender);
+		
+		// act
+		bookingScheduler.addSchedule(schedule);
+		
+		// assert
+		assertThat(testableMailSender.getCountSendMailMethodIsCalled(), is(1));
+	}
 }
