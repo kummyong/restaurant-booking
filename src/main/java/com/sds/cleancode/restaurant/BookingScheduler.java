@@ -3,6 +3,7 @@ package com.sds.cleancode.restaurant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -10,14 +11,10 @@ import org.joda.time.DateTimeConstants;
 public class BookingScheduler extends Observable {
 	private int capacityPerHour;	
 	private List<Schedule> schedules;	
-	private SmsSender smsSender;
-	private MailSender mailSender;
 
 	public BookingScheduler(int capacityPerHour) {
 		this.schedules = new ArrayList<Schedule>();
 		this.capacityPerHour = capacityPerHour;
-		this.smsSender = new SmsSender();
-		this.mailSender = new MailSender();
 	}
 	
 	public void addSchedule(Schedule schedule) {
@@ -46,14 +43,10 @@ public class BookingScheduler extends Observable {
 		
 		schedules.add(schedule);
 		
-		// send SMS to customer using Observer Pattern  
+		// send SMS to customer using Observer Pattern (SmsSender implements Observer)  
+		// send E-Mail to customer using Observer Pattern (MailSender implements Observer)
 		setChanged();
 		notifyObservers(schedule);
-		
-		// send E-mail to customer when e-mail is valid
-		if(schedule.getCustomer().getEmail() != null){
-			mailSender.sendMail(schedule);
-		}
 	}
 
 	public DateTime getNow() {
@@ -66,13 +59,5 @@ public class BookingScheduler extends Observable {
 
 	public void setSchedules(List<Schedule> schedules) {
 		this.schedules = schedules;
-	}
-
-	public void setSmsSender(SmsSender smsSender) {
-		this.smsSender = smsSender;
-	}
-
-	public void setMailSender(MailSender mailSender) {
-		this.mailSender = mailSender;
 	}
 }
