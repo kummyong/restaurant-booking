@@ -140,5 +140,24 @@ public class BookingSchedulerTest {
 		assertThat(testableMailSender.getCountSendMailMethodIsCalled(), is(1));
 	}
 	
-	// Step10. 테스트 코드 리팩토링  
+	// Step10. 테스트 코드 리팩토링 
+	
+	@Test
+	public void Step11_현재날짜가_일요일인_경우_예약불가_예외처리() {
+		
+		// arrange
+		BookingScheduler bookingScheduler= new SundayBookingScheduler(MAX_CAPACITY); 
+		
+		try {
+			// act
+			Schedule newSchedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITH_EMAIL);
+			bookingScheduler.addSchedule(newSchedule);
+			fail();
+		} catch (RuntimeException e) {
+			
+			// assert
+			assertThat(e.getMessage(), is("Booking system is not available on sunday"));
+		}
+		
+	}
 }
