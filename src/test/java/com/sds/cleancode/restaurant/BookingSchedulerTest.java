@@ -146,7 +146,8 @@ public class BookingSchedulerTest {
 	public void Step11_현재날짜가_일요일인_경우_예약불가_예외처리() {
 		
 		// arrange
-		BookingScheduler bookingScheduler= new SundayBookingScheduler(MAX_CAPACITY); 
+		String sunday= "2019/02/03 17:00";
+		BookingScheduler bookingScheduler= new TestableBookingScheduler(MAX_CAPACITY, sunday); 
 		
 		try {
 			// act
@@ -164,7 +165,8 @@ public class BookingSchedulerTest {
 	public void Step12_현재날짜가_월요일인_경우_예약가능() {
 		
 		// arrange
-		BookingScheduler bookingScheduler= new MondayBookingScheduler(MAX_CAPACITY);
+		String monday= "2019/02/04 17:00";
+		BookingScheduler bookingScheduler= new TestableBookingScheduler(MAX_CAPACITY, monday);
 		
 		// act
 		Schedule newSchedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITH_EMAIL);
@@ -174,4 +176,7 @@ public class BookingSchedulerTest {
 		assertThat(bookingScheduler.hasSchedule(newSchedule), is(true));
 		
 	}
+	
+	// Step13. 테스트 코드 리팩토링. TestableBookingScheduler 클래스로 일반화. SundayBookingScheduler, MondayBookingScheduler 삭제
+	
 }
