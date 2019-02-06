@@ -158,6 +158,20 @@ public class BookingSchedulerTest {
 			// assert
 			assertThat(e.getMessage(), is("Booking system is not available on sunday"));
 		}
+	}
+	
+	@Test
+	public void Step12_현재날짜가_월요일인_경우_예약가능() {
+		
+		// arrange
+		BookingScheduler bookingScheduler= new MondayBookingScheduler(MAX_CAPACITY);
+		
+		// act
+		Schedule newSchedule= new Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITH_EMAIL);
+		bookingScheduler.addSchedule(newSchedule);
+		
+		// assert
+		assertThat(bookingScheduler.hasSchedule(newSchedule), is(true));
 		
 	}
 }
