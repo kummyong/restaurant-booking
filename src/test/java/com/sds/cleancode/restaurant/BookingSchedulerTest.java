@@ -3,6 +3,8 @@ package com.sds.cleancode.restaurant;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.RETURNS_MOCKS;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +20,8 @@ public class BookingSchedulerTest {
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("YYYY/MM/dd HH:mm");
 	private static final DateTime ON_THE_HOUR = DATE_TIME_FORMATTER.parseDateTime("2017/06/19 17:00");
 	private static final DateTime NOT_ONT_THE_HOUR = new DateTime(2017, 2, 6, 17, 5);
-	private static final Customer CUSTOMER_WITHOUT_EMAIL = new Customer("Fake name", "010-1234-4727");
-	private static final Customer CUSTOMER_WITH_EMAIL= new Customer("Ross", "010-1234-4727", "abc@test.com");
+	private static final Customer CUSTOMER_WITHOUT_EMAIL = mock(Customer.class);
+	private static final Customer CUSTOMER_WITH_EMAIL= mock(Customer.class, RETURNS_MOCKS);
 	private static final int MAX_CAPACITY = 3;
 	private static final int UNDER_CAPACITY = 1;
 	private BookingScheduler bookingScheduler = new BookingScheduler(MAX_CAPACITY);
